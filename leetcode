@@ -1,0 +1,84 @@
+#最长回文子串
+#描述：给定一个字符串s，找到s中最长的回文子串。你可以假设s的最大长度为1000。
+#思路：马拉车算法（动态规划问题）https://blog.csdn.net/HappyRocking/article/details/82622881
+class Solution:
+    def longestPalindrome(self, s: str) -> str:
+        if len(s) <= 1:
+            return s
+        #'连接符'.join(x for x in s)。join函数()必须是一个序列，不知道要连接多少个parts的时候，用for。
+        ss = '\0\1' + '\1'.join([x for x in s]) + '\1\2'
+        p = [0] * len(ss)
+        center = 0
+        mx = 0
+        result = ''
+        
+        for i in range(1, len(p)-1):
+            if i < mx:
+                p[i] = min(p[2 * center - i], mx - i)
+            
+            while ss[i + p[i] + 1] == ss[i - p[i] - 1]:
+                p[i] += -1
+            
+            if i + p[i] > mx:
+                mx = i + p[i]
+                center = i
+            
+            if 2 * p[i] + 1 > len(result):
+                result = ss[i - p[i] : i + p[i] + 1]
+        return result.replace('\1', '')
+        
+        
+        
+#最长回文串
+#给定一个包含大写字母和小写字母的字符串，找到通过这些字母构造成的最长的回文串。在构造过程中，请注意区分大小写。比如 "Aa" 不能当做一个回文字符串。
+class Solution:
+    def longestPalindrome(self, s: str) -> int:
+        if len(s) <= 1:
+            return len(s)
+        
+        temp = 0
+        count = 0
+        #把字符串s每个字符分开形成list,直接用list()函数。如果想用s.split('')是不对的，因为分割的符号不能是空的''。
+        ss = list(s)
+        #把list变为集合，删除重复的字符。
+        sss = set(ss)
+        #创建字典的方法：当不确定字典key的个数，可以用for循环
+        dic = {i : 0 for i in sss}
+        for i in s:
+            dic[i] += 1
+        #//表示整除，/是浮点数除法
+        for i in sss:
+            temp += (dic[i] // 2) * 2
+            count += dic[i] % 2
+
+        if count == 0:
+            return temp
+        else:
+            return temp + 1
+            
+            
+#验证回文串
+#给定一个字符串，验证它是否是回文串，只考虑字母和数字字符，可以忽略字母的大小写。
+class Solution:
+    def isPalindrome(self, s: str) -> bool:
+        letter1 = 'abcdefghijklmnopqrstuvwxyz'
+        letter2 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        numbers = '0123456789'
+        combo = letter1 + letter2 + numbers
+        #A:replace函数只是展现出替换之后的样子，不返回替换后的结果，和[::-1]类似。
+        #B:replace函数可以选择替换的次数。
+        #index和find只能用于字符串查找，但是index找不到返回异常值，find找不到返回-1，所以find更好用一点。
+        for i in s:
+            if i not in combo:
+                s = s.replace(i, '')
+            if i in letter2:
+                a = letter2.index(i)
+                s = s.replace(i, letter1[a])       
+                
+        if s == s[::-1]:
+            return True
+        else:
+            return False
+
+
+
